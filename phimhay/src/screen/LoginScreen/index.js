@@ -20,10 +20,11 @@ class LoginScreen extends Component {
       filteredMovie: [],
       refreshing: false,
       page_index: 1,
-      loadMore: true
+      loadMore: true,
+      filterText: ''
     };
     this._onRefresh = this._onRefresh.bind(this);
-    this._onEndReached = this._onEndReached.bind(this);
+    // this._onEndReached = this._onEndReached.bind(this);
     this._renderItem = this._renderItem.bind(this);
   }
 
@@ -59,16 +60,15 @@ class LoginScreen extends Component {
         }
         this.setState({
           dataMovie: temp_arr,
-          filteredMovie: temp_arr,
           page_index: next
         }, () =>
-            console.log(this.state.filteredMovie))
+            console.log('# data ban dau:', this.state.filteredMovie))
       })
       .catch(err => console.log(err))
   }
 
 
-  _onEndReached = () => {
+  _onEndReached() {
 
     callApi(endPoint, 'post', querystring.stringify({
       device_agent: "{\"client_id\":\"2922648845\",\"device_name\":\"GT - P7500\",\"device_id\":\"09CE2A8DE256421DA3F9C49400AA73DF\",\"os_name\":\"android\",\"os_version\":\"1.0.1\",\"app_name\":\"io.mov.pkg2018\",\"app_version\":\"1.0.0\"}",
@@ -80,10 +80,9 @@ class LoginScreen extends Component {
         arr = arr.concat(res.data);
         this.setState({
           dataMovie: this.state.dataMovie.concat(arr),
-          filteredMovie: this.state.dataMovie.concat(arr),
           page_index: this.state.page_index + 1,
         })
-        console.log(this.state.dataMovie);
+        console.log('# data sau khi reach: ', this.state.dataMovie);
       } else {
         Alert.alert('Thông báo',
           'Hiện tại chúng tôi chỉ có bấy nhiêu đây phim thôi!',
@@ -101,8 +100,11 @@ class LoginScreen extends Component {
   filterMovies = (textMovie) => {
     let moviesCopy = this.state.dataMovie;
     let results = moviesCopy.filter(movie => movie.key.indexOf(textMovie) === 0);
-    this.setState({ filteredMovie: results }, () => console.log(this.state.filteredMovie));
-    console.log(textMovie);
+    this.setState({
+      filteredMovie: results,
+      filterText: textMovie
+    }, () => console.log('# filtered Movie:', this.state.filteredMovie));
+    console.log('# filter text:', this.state.filterText);
 
   };
 
@@ -138,23 +140,38 @@ class LoginScreen extends Component {
           onChangeText={(phim) => this.filterMovies(phim)}
         />
 
-        <FlatList
-          style={styles.MovieItem}
-          numColumns={3}
-          data={this.state.filteredMovie}
-          refreshControl={
-            <RefreshControl
-              colors={["#9Bd35A", "#689F38"]}
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
-            />
-          }
-          extraData={this.state}
-          keyExtractor={(item, index) => item.key}
-          renderItem={this._renderItem}
-          onEndReached={this._onEndReached}
-          onEndReachedThreshold={0.5}
-        />
+        {this.state.filterText != '' ?
+          <FlatList
+            style={styles.MovieItem}
+            numColumns={3}
+            data={this.state.filteredMovie}
+            refreshControl={
+              <RefreshControl
+                colors={["#9Bd35A", "#689F38"]}
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh.bind(this)}
+              />
+            }
+            // extraData={this.state}
+            keyExtractor={(item, index) => item.key}
+            renderItem={this._renderItem}
+          />
+          :
+          <FlatList
+            style={styles.MovieItem}
+            numColumns={3}
+            data={this.state.dataMovie}
+            refreshControl={
+              <RefreshControl
+                colors={["#9Bd35A", "#689F38"]}
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh.bind(this)}
+              />
+            }
+            keyExtractor={(item, index) => index}
+            renderItem={this._renderItem}
+            onEndReached={() => this._onEndReached()}
+          />}
 
       </View>
     );
