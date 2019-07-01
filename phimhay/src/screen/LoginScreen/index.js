@@ -1,54 +1,66 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, Button, ScrollView, TextInput, RefreshControl, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, Button, ScrollView, TextInput, RefreshControl, TouchableOpacity, Alert } from 'react-native';
 import NavigationService from '../../navigation/NavigationService';
 import TEST_DATA from '../../../TEST_DATA.json';
 import callApi from '../../api/helper';
 import querystring from 'querystring';
+import debounce from 'lodash';
 
+//api cinema /cnm
 const hostApi = 'https://kw.freecinema.info/m';
+const endPoint = '/cnm';
 
 
 class LoginScreen extends Component {
   constructor(props) {
     super(props);
+    this.onEndReachedCalledDuringMomentum = true;
     this.state = {
       dataMovie: [],
       filteredMovie: [],
       refreshing: false,
-      pageNumber: 1,
+      page_index: 1,
+      loadMore: true
     };
+    this._onRefresh = this._onRefresh.bind(this);
+    this._onEndReached = this._onEndReached.bind(this);
+    this._renderItem = this._renderItem.bind(this);
   }
 
   _onRefresh = () => {
-     this.loadData();
+    this.setState({ refreshing: true })
+    this.loadData(this.state.page_index);
+    this.setState({ refreshing: false })
 
-    // this.setState({ refreshing: true });
-    // this.loadData().then(() => {
-    //   this.setState({ refreshing: false });
-    // });
-    // alert('hello em')
+    Alert.alert('Refesh done')
+    // Alert.alert('Thông báo',
+    //       'Bạn vừa load lại danh sách phim!',
+    //       [
+    //         { text: 'Tôi biết rồi!', onPress: () => console.log('Ok Pressed') }
+    //       ])
   }
-
+  // 
   async componentDidMount() {
     await this.loadData();
   }
 
-  loadData = () => {
-    callApi('/cnm', 'POST', querystring.stringify({
+  loadData = (next = 1) => {
+
+    callApi(endPoint, 'post', querystring.stringify({
       device_agent: "{\"client_id\":\"2922648845\",\"device_name\":\"GT-P7500\",\"device_id\":\"09CE2A8DE256421DA3F9C49400AA73DF\",\"os_name\":\"android\",\"os_version\":\"1.0.1\",\"app_name\":\"io.mov.pkg2018\",\"app_version\":\"1.0.0\"}",
-      page_index: this.state.pageNumber
+      page_index: next
+      // page_index: 78
     }))
       .then(res => {
         var temp_arr = [];
-        // var ngu = [];
         if (res.data.length != 0) {
           temp_arr = temp_arr.concat(res.data);
-          // ngu = ngu.concat(res.data);
 
         }
         this.setState({
           dataMovie: temp_arr,
-          filterMovies: temp_arr,
+          filteredMovie: temp_arr,
+          page_index: next
         }, () =>
             console.log(this.state.filteredMovie))
       })
@@ -57,22 +69,21 @@ class LoginScreen extends Component {
 
 
   _onEndReached = () => {
-    const endPoint = '/cnm';
-    callApi(
-      endPoint,
-      'post',
-      querystring.stringify({
-        device_agent: "{\"client_id\":\"2922648845\",\"device_name\":\"GT - P7500\",\"device_id\":\"09CE2A8DE256421DA3F9C49400AA73DF\",\"os_name\":\"android\",\"os_version\":\"1.0.1\",\"app_name\":\"io.mov.pkg2018\",\"app_version\":\"1.0.0\"}",
-        page_index: (this.state.pageNumber + 1)
-      })
+
+    callApi(endPoint, 'post', querystring.stringify({
+      device_agent: "{\"client_id\":\"2922648845\",\"device_name\":\"GT - P7500\",\"device_id\":\"09CE2A8DE256421DA3F9C49400AA73DF\",\"os_name\":\"android\",\"os_version\":\"1.0.1\",\"app_name\":\"io.mov.pkg2018\",\"app_version\":\"1.0.0\"}",
+      page_index: (this.state.page_index + 1)
+    })
     ).then(res => {
+      var arr = []
       if (res.data.length != 0) {
         arr = arr.concat(res.data);
         this.setState({
-          dataMovie: this.state.dataSource.cloneWithRows(arr),
-          pageNumber: this.state.pageNumber + 1,
+          dataMovie: this.state.dataMovie.concat(arr),
+          filteredMovie: this.state.dataMovie.concat(arr),
+          page_index: this.state.page_index + 1,
         })
-        console.log(arr);
+        console.log(this.state.dataMovie);
       } else {
         Alert.alert('Thông báo',
           'Hiện tại chúng tôi chỉ có bấy nhiêu đây phim thôi!',
@@ -83,15 +94,25 @@ class LoginScreen extends Component {
     }).catch((err) => {
       console.log(err);
     })
+    // Alert.alert('Load more done')
+
   }
 
   filterMovies = (textMovie) => {
     let moviesCopy = this.state.dataMovie;
     let results = moviesCopy.filter(movie => movie.key.indexOf(textMovie) === 0);
     this.setState({ filteredMovie: results }, () => console.log(this.state.filteredMovie));
-    // console.log(textMovie);
+    console.log(textMovie);
 
   };
+
+  // onEndReached = () => {
+  //   console.log('onEndReached()', this.state.data)
+  //   // let data = this.state.data
+  //   // let newData = data.concat(this.getData(NUM_DATA, data.length + 1))
+  //   // this.setState({data: newData})
+  //   this.loadData(this.state.page_index + 1);
+  // }
 
   _renderItem = ({ item }) => (
     <View style={styles.SingleItem}>
@@ -108,7 +129,6 @@ class LoginScreen extends Component {
   );
 
   render() {
-    console.log(this.state.filterMovie);
     return (
       <View style={styles.container}>
         <Text style={{ margin: 5, textAlign: 'center', fontSize: 25, marginTop: 20, fontWeight: 'bold' }} >TOMMY MOVIE</Text>
@@ -121,11 +141,11 @@ class LoginScreen extends Component {
         <FlatList
           style={styles.MovieItem}
           numColumns={3}
-          data={this.state.dataMovie}
+          data={this.state.filteredMovie}
           refreshControl={
             <RefreshControl
               colors={["#9Bd35A", "#689F38"]}
-              refreshing={this.props.refreshing}
+              refreshing={this.state.refreshing}
               onRefresh={this._onRefresh.bind(this)}
             />
           }
@@ -133,6 +153,7 @@ class LoginScreen extends Component {
           keyExtractor={(item, index) => item.key}
           renderItem={this._renderItem}
           onEndReached={this._onEndReached}
+          onEndReachedThreshold={0.5}
         />
 
       </View>
