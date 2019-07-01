@@ -7,10 +7,10 @@ class DetailMovieScreen extends Component {
     super(props);
     this.state = {
       title: '',
-      poster_path: 'none',
-      overview: '',
-      adult: false,
-      release_date: ''
+      imagePosterUrl: 'none',
+      // overview: '',
+      // adult: false,
+      releaseDate: ''
 
     };
   }
@@ -18,10 +18,10 @@ class DetailMovieScreen extends Component {
     const { navigation } = this.props;
     this.setState({
       title: navigation.getParam('title', 'none'),
-      poster_path: navigation.getParam('poster_path', 'none'),
-      overview: navigation.getParam('overview'),
-      adult: navigation.getParam('adult'),
-      release_date: navigation.getParam('release_date'),
+      imagePosterUrl: navigation.getParam('imagePosterUrl', 'none'),
+      // overview: navigation.getParam('overview'),
+      // adult: navigation.getParam('adult'),
+      releaseDate: navigation.getParam('releaseDate'),
 
     });
   }
@@ -30,24 +30,22 @@ class DetailMovieScreen extends Component {
     return (
 
       <View style={styles.container}>
-        {/* {this.state.adult ? <Text style={{ color: 'red', fontWeight: 'bold' }}>18+</Text> : <Text></Text>} */}
         <Image
           style={styles.backgroundImage}
-          source={{ uri: `https://image.tmdb.org/t/p/w342${this.state.poster_path}` }}
+          source={{ uri: `${this.state.imagePosterUrl}` }}
         />
         <Text style={styles.tieude}>{this.state.title}</Text>
 
         <Text style={{
           // color: 'white',
           fontWeight: 'bold',
-          fontSize:15,
+          fontSize: 15,
           textAlign: 'center',
           marginTop: '-100%',
           marginHorizontal: 20,
           // borderColor: 'black', borderWidth: 1
-        }}>{this.state.title}{"\n"}{this.state.overview}{"\n"}{this.state.release_date}</Text>
+        }}>{this.state.title}{"\n"}{this.state.releaseDate}</Text>
 
-        {/* <Text>{this.state.release_date}</Text> */}
         <Button
           title="BACK"
           color="#841584"
