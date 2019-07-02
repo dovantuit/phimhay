@@ -5,10 +5,9 @@ import { reducer as fromReducer } from 'redux-form'
 
 ////
 //import reduders here
-import serviceReducers, { name as nameOfServiceReducers } from './serviceReducers'
+import movieReducers, { name as nameOfMovieReducers } from './movieReducers'
+import loadingReducers, { name as nameOfLoadingReducers } from './loadingReducers'; // import 
 ////
-
-
 
 const rootPersisConfig = {
     key: 'root',
@@ -19,7 +18,8 @@ const rootPersisConfig = {
 };
 
 const reducers = {
-    [nameOfServiceReducers]: serviceReducers,
+    [nameOfMovieReducers]: movieReducers,
+    [nameOfLoadingReducers]: loadingReducers
 }
 
 ////search here Object.assign(reducers,{form: fromReducer})
@@ -32,5 +32,6 @@ const rootReducer = combineReducers(
 export default persistReducer(rootPersisConfig, rootReducer);
 
 export {
-    nameOfServiceReducers,
+    nameOfMovieReducers,
+    nameOfLoadingReducers
 }

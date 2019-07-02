@@ -1,5 +1,5 @@
-import * as serviceActions from './serviceActions'
+import * as movieActions from './movieActions'
 
 export {
-    serviceActions,
+  movieActions,
 }

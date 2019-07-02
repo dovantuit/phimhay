@@ -4,12 +4,14 @@ import NavigationService from '../../navigation/NavigationService';
 import TEST_DATA from '../../../TEST_DATA.json';
 import callApi from '../../api/helper';
 import querystring from 'querystring';
-import debounce from 'lodash';
+import { nameOfMovieReducers, nameOfLoadingReducers } from '../../reducers';
+import { movieActions } from '../../actions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 //api cinema /cnm
 const hostApi = 'https://kw.freecinema.info/m';
 const endPoint = '/cnm';
-
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -48,26 +50,40 @@ class LoginScreen extends Component {
   }
 
   loadData = (next = 1) => {
-
-    callApi(endPoint, 'post', querystring.stringify({
-      device_agent: "{\"client_id\":\"2922648845\",\"device_name\":\"GT-P7500\",\"device_id\":\"09CE2A8DE256421DA3F9C49400AA73DF\",\"os_name\":\"android\",\"os_version\":\"1.0.1\",\"app_name\":\"io.mov.pkg2018\",\"app_version\":\"1.0.0\"}",
-      page_index: next
-      // page_index: 78
-    }))
-      .then(res => {
+    const data = {
+      'next': next,
+      callback: () => {
         var temp_arr = [];
-        if (res.data.length != 0) {
-          temp_arr = temp_arr.concat(res.data);
-
+        if (this.props.dataMovie.length != 0) {
+          temp_arr = temp_arr.concat(this.props.dataMovie);
         }
         this.setState({
-          dataMovie: temp_arr,
-          page_index: next,
-          isLoading: false,
+          dataMovie: this.props.dataMovie,
+          page_index: next
         }, () =>
-            console.log('# data ban dau:', this.state.filteredMovie))
-      })
-      .catch(err => console.log(err))
+            console.log('# data ban dau:', this.state.dataMovie))
+      }
+    }
+    this.props.actions.fetchMovieRequest(data);
+    // callApi(endPoint, 'post', querystring.stringify({
+    //   device_agent: "{\"client_id\":\"2922648845\",\"device_name\":\"GT-P7500\",\"device_id\":\"09CE2A8DE256421DA3F9C49400AA73DF\",\"os_name\":\"android\",\"os_version\":\"1.0.1\",\"app_name\":\"io.mov.pkg2018\",\"app_version\":\"1.0.0\"}",
+    //   page_index: next
+    //   // page_index: 78
+    // }))
+    //   .then(res => {
+    //     var temp_arr = [];
+    //     if (res.data.length != 0) {
+    //       temp_arr = temp_arr.concat(res.data);
+
+    //     }
+    //     this.setState({
+    //       dataMovie: temp_arr,
+    //       page_index: next,
+    //       isLoading: false,
+    //     }, () =>
+    //         console.log('# data ban dau:', this.state.filteredMovie))
+    //   })
+    //   .catch(err => console.log(err))
   }
 
 
@@ -182,7 +198,7 @@ class LoginScreen extends Component {
             onEndReached={() => this._onEndReached()}
             onEndReachedThreshold={1}
           />}
-        {this.state.isLoading && <ActivityIndicator style={{ position: 'absolute', top: 120 }} size="large" color="#0000ff" />}
+        {this.props.isLoading && <ActivityIndicator style={{ position: 'absolute', top: 120 }} size="large" color="#0000ff" />}
 
         {this.state.onReacheddLoading && <ActivityIndicator style={{ position: 'absolute', bottom: 20 }} size="large" color="#0000ff" />}
       </View>
@@ -220,4 +236,17 @@ const styles = StyleSheet.create({
   }
 })
 
-export default LoginScreen;
+const mapStateToProps = (state, ownProps) => {
+  return {
+    ...state[nameOfMovieReducers],
+    ...state[nameOfLoadingReducers][movieActions.FETCH_MOVIE],
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    actions: bindActionCreators({ ...movieActions }, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)

@@ -4,13 +4,13 @@ import { fork, all } from 'redux-saga/effects'
 
 ////
 //import sagas list here
-import serviceSagas from './serviceSagas'
+import movieSagas from './movieSagas';
 ///
 
 const sagaList = [
     ////
     //add sagas list here
-    serviceSagas,
+    movieSagas,
     ///
 ];
 
