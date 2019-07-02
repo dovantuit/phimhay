@@ -7,12 +7,12 @@ import { Actions } from 'react-native-router-flux';
 import NavigationService from '../../navigation/NavigationService';
 
 class DetailMovieScreen extends Component {
-  home() {
-    Actions.home();
-  }
-  videos() {
-    Actions.videos();
-  }
+  // home() {
+  //   Actions.home();
+  // }
+  // videos() {
+  //   Actions.videos();
+  // }
   constructor(props) {
     super(props);
     this.state = {

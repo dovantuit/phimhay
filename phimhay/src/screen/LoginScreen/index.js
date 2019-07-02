@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, Button, ScrollView, TextInput, RefreshControl, TouchableOpacity, Alert, StatusBar } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, Button, ScrollView, TextInput, RefreshControl, TouchableOpacity, Alert, StatusBar, ActivityIndicator } from 'react-native';
 import NavigationService from '../../navigation/NavigationService';
 import TEST_DATA from '../../../TEST_DATA.json';
 import callApi from '../../api/helper';
@@ -21,7 +21,9 @@ class LoginScreen extends Component {
       refreshing: false,
       page_index: 1,
       loadMore: true,
-      filterText: ''
+      filterText: '',
+      isLoading: true,
+      onReacheddLoading: false,
     };
     this._onRefresh = this._onRefresh.bind(this);
     // this._onEndReached = this._onEndReached.bind(this);
@@ -31,14 +33,14 @@ class LoginScreen extends Component {
   _onRefresh = () => {
     this.setState({ refreshing: true })
     this.loadData(this.state.page_index);
-    this.setState({ refreshing: false })
+    this.setState({ refreshing: true })
 
-    Alert.alert('Refesh done')
+    // Alert.alert('Refesh done')
     // Alert.alert('Thông báo',
-    //       'Bạn vừa load lại danh sách phim!',
-    //       [
-    //         { text: 'Tôi biết rồi!', onPress: () => console.log('Ok Pressed') }
-    //       ])
+    //   'Bạn vừa load lại danh sách phim!',
+    //   [
+    //     { text: 'Tôi biết rồi!', onPress: () => console.log('Ok Pressed') }
+    //   ])
   }
   // 
   async componentDidMount() {
@@ -60,7 +62,8 @@ class LoginScreen extends Component {
         }
         this.setState({
           dataMovie: temp_arr,
-          page_index: next
+          page_index: next,
+          isLoading: false,
         }, () =>
             console.log('# data ban dau:', this.state.filteredMovie))
       })
@@ -69,7 +72,11 @@ class LoginScreen extends Component {
 
 
   _onEndReached() {
-
+    // Alert.alert('Thông báo',
+    //   'Bạn vừa load thêm danh sách phim!',
+    //   [
+    //     { text: 'Tôi biết rồi!', onPress: () => console.log('Ok Pressed') }
+    //   ])
     callApi(endPoint, 'post', querystring.stringify({
       device_agent: "{\"client_id\":\"2922648845\",\"device_name\":\"GT - P7500\",\"device_id\":\"09CE2A8DE256421DA3F9C49400AA73DF\",\"os_name\":\"android\",\"os_version\":\"1.0.1\",\"app_name\":\"io.mov.pkg2018\",\"app_version\":\"1.0.0\"}",
       page_index: (this.state.page_index + 1)
@@ -81,6 +88,7 @@ class LoginScreen extends Component {
         this.setState({
           dataMovie: this.state.dataMovie.concat(arr),
           page_index: this.state.page_index + 1,
+          isLoading: false
         })
         console.log('# data sau khi reach: ', this.state.dataMovie);
       } else {
@@ -144,6 +152,8 @@ class LoginScreen extends Component {
           placeholder='search movie here'
           onChangeText={(phim) => this.filterMovies(phim)}
         />
+        {this.state.isLoading ? <ActivityIndicator style={{paddingVertical:10, display:'flex'}} size="large" color="#0000ff" />:<View></View>}
+        
 
         {this.state.filterText != '' ?
           <FlatList
@@ -176,6 +186,7 @@ class LoginScreen extends Component {
             keyExtractor={(item, index) => index}
             renderItem={this._renderItem}
             onEndReached={() => this._onEndReached()}
+            onEndReachedThreshold={1}
           />}
 
       </View>
