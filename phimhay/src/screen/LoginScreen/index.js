@@ -33,7 +33,7 @@ class LoginScreen extends Component {
   _onRefresh = () => {
     this.setState({ refreshing: true })
     this.loadData(this.state.page_index);
-    this.setState({ refreshing: true })
+    this.setState({ refreshing: false })
 
     // Alert.alert('Refesh done')
     // Alert.alert('Thông báo',
@@ -77,6 +77,7 @@ class LoginScreen extends Component {
     //   [
     //     { text: 'Tôi biết rồi!', onPress: () => console.log('Ok Pressed') }
     //   ])
+    this.setState({onReacheddLoading: true})
     callApi(endPoint, 'post', querystring.stringify({
       device_agent: "{\"client_id\":\"2922648845\",\"device_name\":\"GT - P7500\",\"device_id\":\"09CE2A8DE256421DA3F9C49400AA73DF\",\"os_name\":\"android\",\"os_version\":\"1.0.1\",\"app_name\":\"io.mov.pkg2018\",\"app_version\":\"1.0.0\"}",
       page_index: (this.state.page_index + 1)
@@ -88,7 +89,8 @@ class LoginScreen extends Component {
         this.setState({
           dataMovie: this.state.dataMovie.concat(arr),
           page_index: this.state.page_index + 1,
-          isLoading: false
+          isLoading: false,
+          onReacheddLoading: false
         })
         console.log('# data sau khi reach: ', this.state.dataMovie);
       } else {
@@ -152,7 +154,7 @@ class LoginScreen extends Component {
           placeholder='search movie here'
           onChangeText={(phim) => this.filterMovies(phim)}
         />
-        {this.state.isLoading ? <ActivityIndicator style={{paddingVertical:10, display:'flex'}} size="large" color="#0000ff" />:<View></View>}
+        {this.state.isLoading && <ActivityIndicator style={{flexDirection: 'column', display: 'flex'}} size="large" color="#0000ff" />}
         
 
         {this.state.filterText != '' ?
@@ -163,6 +165,7 @@ class LoginScreen extends Component {
             refreshControl={
               <RefreshControl
                 colors={["#9Bd35A", "#689F38"]}
+                size="large"
                 refreshing={this.state.refreshing}
                 onRefresh={this._onRefresh.bind(this)}
               />
@@ -188,7 +191,7 @@ class LoginScreen extends Component {
             onEndReached={() => this._onEndReached()}
             onEndReachedThreshold={1}
           />}
-
+        {this.state.onReacheddLoading && <ActivityIndicator style={{position: 'absolute', bottom: 20}} size="large" color="#0000ff" />}
       </View>
     );
   }
