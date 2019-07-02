@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, Button, ScrollView, TextInput, RefreshControl, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, Button, ScrollView, TextInput, RefreshControl, TouchableOpacity, Alert, StatusBar } from 'react-native';
 import NavigationService from '../../navigation/NavigationService';
 import TEST_DATA from '../../../TEST_DATA.json';
 import callApi from '../../api/helper';
@@ -123,6 +123,7 @@ class LoginScreen extends Component {
         imagePosterUrl: item.imagePosterUrl,
         title: item.title,
         releaseDate: item.releaseDate,
+        trailer: item.trailer,
       })}>
         <Image style={{ width: '100%', height: 200 }} source={{ uri: `${item.imagePosterUrl}` }} />
         <Text style={{ margin: 5, textAlign: 'center', fontWeight: 'bold' }} numberOfLines={1} ellipsizeMode='tail'>{item.title}</Text>
@@ -133,6 +134,10 @@ class LoginScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar
+          backgroundColor="#fff"
+          barStyle="dark-content"
+        />
         <Text style={{ margin: 5, textAlign: 'center', fontSize: 25, marginTop: 20, fontWeight: 'bold' }} >TOMMY MOVIE</Text>
         <TextInput
           style={{ height: 40, width: "95%", borderColor: 'gray', borderWidth: 1, borderRadius: 20, marginTop: 1, marginBottom: 5, paddingLeft: 30 }}

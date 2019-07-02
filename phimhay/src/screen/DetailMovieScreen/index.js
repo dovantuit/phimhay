@@ -1,8 +1,18 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, Button, ImageBackground } from 'react-native';
+import {
+  View, Text, FlatList, Image, StyleSheet, Button, ImageBackground, StatusBar,
+  WebView
+} from 'react-native';
+import { Actions } from 'react-native-router-flux';
 import NavigationService from '../../navigation/NavigationService';
 
 class DetailMovieScreen extends Component {
+  home() {
+    Actions.home();
+  }
+  videos() {
+    Actions.videos();
+  }
   constructor(props) {
     super(props);
     this.state = {
@@ -10,7 +20,8 @@ class DetailMovieScreen extends Component {
       imagePosterUrl: 'none',
       // overview: '',
       // adult: false,
-      releaseDate: ''
+      releaseDate: '',
+      trailer: ''
 
     };
   }
@@ -22,6 +33,7 @@ class DetailMovieScreen extends Component {
       // overview: navigation.getParam('overview'),
       // adult: navigation.getParam('adult'),
       releaseDate: navigation.getParam('releaseDate'),
+      trailer: navigation.getParam('trailer'),
 
     });
   }
@@ -30,12 +42,15 @@ class DetailMovieScreen extends Component {
     return (
 
       <View style={styles.container}>
+        <StatusBar
+          backgroundColor="#fff"
+          barStyle="dark-content"
+        />
+
         <Image
           style={styles.backgroundImage}
           source={{ uri: `${this.state.imagePosterUrl}` }}
         />
-        <Text style={styles.tieude}>{this.state.title}</Text>
-
         <Text style={{
           // color: 'white',
           fontWeight: 'bold',
@@ -44,8 +59,14 @@ class DetailMovieScreen extends Component {
           marginTop: '-100%',
           marginHorizontal: 20,
           // borderColor: 'black', borderWidth: 1
-        }}>{this.state.title}{"\n"}{this.state.releaseDate}</Text>
+        }}>{this.state.title}</Text>
+        <WebView
+          style={{ height: 400, width: 350, borderRadius: 15, overflow: 'hidden' }}
+          // source={{ uri: "https://www.youtube.com/embed/"+this.props.video_url}}
+          source={{ uri: "https://www.youtube.com/embed/" + this.state.trailer }}
 
+          startInLoadingState={true}
+        />
         <Button
           title="BACK"
           color="#841584"
