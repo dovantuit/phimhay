@@ -77,7 +77,7 @@ class LoginScreen extends Component {
     //   [
     //     { text: 'Tôi biết rồi!', onPress: () => console.log('Ok Pressed') }
     //   ])
-    this.setState({onReacheddLoading: true})
+    this.setState({ onReacheddLoading: true })
     callApi(endPoint, 'post', querystring.stringify({
       device_agent: "{\"client_id\":\"2922648845\",\"device_name\":\"GT - P7500\",\"device_id\":\"09CE2A8DE256421DA3F9C49400AA73DF\",\"os_name\":\"android\",\"os_version\":\"1.0.1\",\"app_name\":\"io.mov.pkg2018\",\"app_version\":\"1.0.0\"}",
       page_index: (this.state.page_index + 1)
@@ -118,14 +118,6 @@ class LoginScreen extends Component {
 
   };
 
-  // onEndReached = () => {
-  //   console.log('onEndReached()', this.state.data)
-  //   // let data = this.state.data
-  //   // let newData = data.concat(this.getData(NUM_DATA, data.length + 1))
-  //   // this.setState({data: newData})
-  //   this.loadData(this.state.page_index + 1);
-  // }
-
   _renderItem = ({ item }) => (
     <View style={styles.SingleItem}>
       <TouchableOpacity onPress={() => NavigationService.navigate("DetailMovie", {
@@ -154,7 +146,7 @@ class LoginScreen extends Component {
           placeholder='search movie here'
           onChangeText={(phim) => this.filterMovies(phim)}
         />
-        
+
 
         {this.state.filterText != '' ?
           <FlatList
@@ -190,9 +182,9 @@ class LoginScreen extends Component {
             onEndReached={() => this._onEndReached()}
             onEndReachedThreshold={1}
           />}
-        {this.state.isLoading && <ActivityIndicator style={{position: 'absolute', top: 120}} size="large" color="#0000ff" />}
+        {this.state.isLoading && <ActivityIndicator style={{ position: 'absolute', top: 120 }} size="large" color="#0000ff" />}
 
-        {this.state.onReacheddLoading && <ActivityIndicator style={{position: 'absolute', bottom: 20}} size="large" color="#0000ff" />}
+        {this.state.onReacheddLoading && <ActivityIndicator style={{ position: 'absolute', bottom: 20 }} size="large" color="#0000ff" />}
       </View>
     );
   }
