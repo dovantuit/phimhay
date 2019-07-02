@@ -54,10 +54,11 @@ class DetailMovieScreen extends Component {
         <Text style={{
           // color: 'white',
           fontWeight: 'bold',
-          fontSize: 15,
+          fontSize: 20,
           textAlign: 'center',
           marginTop: '-100%',
-          marginHorizontal: 20,
+          marginBottom: 10,
+          marginHorizontal: 30,
           // borderColor: 'black', borderWidth: 1
         }}>{this.state.title}</Text>
         <WebView
