@@ -154,7 +154,6 @@ class LoginScreen extends Component {
           placeholder='search movie here'
           onChangeText={(phim) => this.filterMovies(phim)}
         />
-        {this.state.isLoading && <ActivityIndicator style={{flexDirection: 'column', display: 'flex'}} size="large" color="#0000ff" />}
         
 
         {this.state.filterText != '' ?
@@ -191,6 +190,8 @@ class LoginScreen extends Component {
             onEndReached={() => this._onEndReached()}
             onEndReachedThreshold={1}
           />}
+        {this.state.isLoading && <ActivityIndicator style={{position: 'absolute', top: 120}} size="large" color="#0000ff" />}
+
         {this.state.onReacheddLoading && <ActivityIndicator style={{position: 'absolute', bottom: 20}} size="large" color="#0000ff" />}
       </View>
     );
